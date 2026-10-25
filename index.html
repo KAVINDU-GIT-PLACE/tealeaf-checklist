@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TeaLeaf Field Scout: 2-week checklist</title>
+<style>
+  :root {
+    --canvas: #F6F8F4;
+    --raised: #FFFFFF;
+    --surface: #EAF3E8;
+    --border: #C9D2C6;
+    --border-strong: #7A8577;
+    --text: #1B2119;
+    --text-2: #454E44;
+    --muted: #5A6458;
+    --green: #338732;
+    --green-text: #2C642B;
+    --forest: #214622;
+    --amber-bg: #FFF4DC;
+    --amber-text: #7A4A00;
+    --danger: #A1120B;
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --canvas: #131A12;
+      --raised: #1B2419;
+      --surface: #22301F;
+      --border: #3A4838;
+      --border-strong: #7A8577;
+      --text: #EDF0EB;
+      --text-2: #C9D2C6;
+      --muted: #A4AFA1;
+      --green: #4C8A40;
+      --green-text: #8FD184;
+      --forest: #EAF3E8;
+      --amber-bg: #3A2D0F;
+      --amber-text: #F2C879;
+      --danger: #FF8C84;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: 16px; }
+  body {
+    margin: 0;
+    background: var(--canvas);
+    color: var(--text);
+    font-family: Inter, "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  main { max-width: 720px; margin: 0 auto; padding: 24px 16px 64px; }
+  h1 { font-family: Poppins, "Segoe UI", system-ui, sans-serif; font-size: 24px; line-height: 32px; margin: 0 0 4px; color: var(--forest); }
+  h2 { font-family: Poppins, "Segoe UI", system-ui, sans-serif; font-size: 18px; line-height: 26px; margin: 0; font-weight: 600; }
+  p { margin: 0; }
+  .sub { color: var(--muted); font-size: 14px; }
+
+  .panel { background: var(--raised); border: 1px solid var(--border); border-radius: 16px; padding: 16px; margin-top: 16px; }
+  .panel h2 { margin-bottom: 8px; }
+
+  .progress-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .big { font-family: Poppins, "Segoe UI", sans-serif; font-size: 32px; line-height: 40px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .bar { height: 12px; background: var(--surface); border: 1px solid var(--border-strong); border-radius: 999px; overflow: hidden; margin-top: 8px; }
+  .bar > span { display: block; height: 100%; width: 0; background: var(--green); transition: width .25s ease; }
+  .next { margin-top: 12px; background: var(--surface); border-radius: 12px; padding: 12px; font-size: 14px; }
+  .next b { color: var(--green-text); }
+
+  label.field { display: block; font-size: 14px; font-weight: 600; margin: 12px 0 4px; }
+  input[type="date"], input[type="time"], textarea {
+    width: 100%; font: inherit; color: var(--text); background: var(--raised);
+    border: 1px solid var(--border-strong); border-radius: 12px; padding: 10px 12px; min-height: 48px;
+  }
+  textarea { min-height: 96px; resize: vertical; }
+  .row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .row > div { flex: 1 1 160px; }
+
+  button {
+    font: inherit; font-weight: 600; min-height: 48px; padding: 0 16px; border-radius: 12px;
+    border: 1px solid var(--border-strong); background: var(--raised); color: var(--green-text); cursor: pointer;
+  }
+  button.primary { background: var(--green); border-color: var(--green); color: #fff; }
+  button.danger { color: var(--danger); }
+  button:disabled { opacity: .55; cursor: not-allowed; }
+  .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  :focus-visible { outline: 2px solid var(--forest); outline-offset: 2px; }
+
+  .notice { margin-top: 12px; padding: 12px; border-radius: 12px; font-size: 14px; background: var(--amber-bg); color: var(--amber-text); }
+  .hidden { display: none; }
+  #status { margin-top: 8px; font-size: 14px; color: var(--green-text); min-height: 21px; }
+
+  details.day { background: var(--raised); border: 1px solid var(--border); border-radius: 16px; margin-top: 12px; }
+  details.day > summary {
+    list-style: none; cursor: pointer; padding: 16px; display: flex; gap: 12px; align-items: center; justify-content: space-between; min-height: 56px;
+  }
+  details.day > summary::-webkit-details-marker { display: none; }
+  details.day[open] > summary { border-bottom: 1px solid var(--border); }
+  .day-title { font-weight: 600; font-family: Poppins, "Segoe UI", sans-serif; }
+  .day-goal { color: var(--muted); font-size: 14px; }
+  .count { font-variant-numeric: tabular-nums; font-size: 14px; font-weight: 600; white-space: nowrap; padding: 4px 12px; border-radius: 999px; border: 1px solid var(--border-strong); }
+  .count.done { background: var(--surface); color: var(--green-text); border-color: var(--green); }
+  .day-body { padding: 8px 16px 16px; }
+
+  .item { display: flex; gap: 12px; align-items: flex-start; padding: 8px 0; min-height: 48px; }
+  .item input { width: 24px; height: 24px; margin-top: 2px; accent-color: var(--green); flex: none; }
+  .item label { cursor: pointer; flex: 1; }
+  .item input:checked + label { color: var(--muted); text-decoration: line-through; }
+  .done-when { margin-top: 8px; padding: 12px; background: var(--surface); border-radius: 12px; font-size: 14px; }
+  .done-when b { color: var(--green-text); }
+  .note-label { font-size: 14px; font-weight: 600; margin: 16px 0 4px; display: block; }
+
+  @media (prefers-reduced-motion: reduce) { .bar > span { transition: none; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>TeaLeaf Field Scout</h1>
+  <p class="sub">Two-week build checklist. Tick an item only after its check passes.</p>
+
+  <section class="panel" aria-labelledby="prog-h">
+    <h2 id="prog-h">Progress</h2>
+    <div class="progress-row">
+      <span class="big" id="pct">0%</span>
+      <span class="sub" id="counts">0 of 0 items</span>
+    </div>
+    <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="bar"><span></span></div>
+    <div class="next" id="next"></div>
+  </section>
+
+  <section class="panel" aria-labelledby="rem-h">
+    <h2 id="rem-h">Daily reminder</h2>
+    <div class="row">
+      <div>
+        <label class="field" for="startDate">Start date (Day 1)</label>
+        <input type="date" id="startDate">
+      </div>
+      <div>
+        <label class="field" for="remTime">Remind me at</label>
+        <input type="time" id="remTime" value="09:00">
+      </div>
+    </div>
+    <div class="actions">
+      <button class="primary" id="enableBtn" type="button">Turn on reminder</button>
+      <button id="icsBtn" type="button">Add to calendar (.ics)</button>
+    </div>
+    <p id="status" role="status"></p>
+    <p class="notice">Browser reminders only fire while this page is open in a tab. For a reminder that works when the page is closed, use "Add to calendar" and import the file into Google Calendar or your phone calendar.</p>
+  </section>
+
+  <section class="panel" aria-labelledby="note-h">
+    <h2 id="note-h">General note</h2>
+    <label class="field" for="generalNote" style="margin-top:0">Decisions, questions for the team, anything to remember</label>
+    <textarea id="generalNote" placeholder="Example: Ask the team about Express vs Supabase on Monday."></textarea>
+  </section>
+
+  <div id="days"></div>
+
+  <section class="panel" aria-labelledby="data-h">
+    <h2 id="data-h">Your data</h2>
+    <p class="sub">Ticks and notes are saved in this browser only. Export a backup before you clear browser data or switch devices.</p>
+    <div class="actions">
+      <button id="exportBtn" type="button">Export backup</button>
+      <button id="importBtn" type="button">Import backup</button>
+      <button class="danger" id="resetBtn" type="button">Reset all</button>
+    </div>
+    <input type="file" id="importFile" accept="application/json" class="hidden">
+  </section>
+</main>
+
+<script>
+(function () {
+  'use strict';
+
+  // ---- Checklist content ----------------------------------------------
+  var DAYS = [
+    { id: 'd0', title: 'Day 0: Decisions', goal: 'Settle these before and alongside the code.', items: [
+      'Git clean, app runs on emulator, tsc and tests pass',
+      'Folder structure created (src/...)',
+      'Backend decision: Node.js + Express (talk to the team)',
+      'Server database chosen (PostgreSQL recommended)',
+      'Photo storage chosen (cloud object storage or server disk)',
+      'Hosting and maintainer decided',
+      'Get Implementation Baseline v3.8 and Mobile UI Spec',
+      'Define the 3 photo quality questions',
+      'Get font files: Poppins, Inter, Noto Sans Sinhala, Noto Sans Tamil'
+    ], done: 'Every decision has a written answer.' },
+    { id: 'd1', title: 'Day 1: Theme tokens', goal: 'Spacing, colour, type, radius, sizing, fonts.', items: [
+      'Replace spacing.ts with the 10-step scale and semantic spacing',
+      'colors.ts with brand palette and semantic tokens',
+      'typography.ts with the 15 type styles',
+      'radius.ts and sizing.ts (48 dp touch target, control heights)',
+      'Bundle fonts for Android',
+      'Test screen shows fonts and colours correctly'
+    ], done: 'tsc passes, Poppins and Inter render on the emulator, Git commit made.' },
+    { id: 'd2', title: 'Day 2: Tooling, i18n, navigation', goal: 'Lint, three languages, 5-tab shell.', items: [
+      'ESLint and Prettier rules, npm run lint passes',
+      'i18next set up with translation keys',
+      'Language switch saved on the device',
+      'Noto fonts switch with Sinhala and Tamil',
+      'React Navigation installed (compatibility checked)',
+      'Tab bar: Home, History, New, Corrections, Sync',
+      'Safe-area insets handled (edge-to-edge)'
+    ], done: 'Changing language changes the tab labels; Sinhala and Tamil letters display correctly.' },
+    { id: 'd3', title: 'Day 3: Core components', goal: 'Button, inputs, dialog.', items: [
+      'Button: primary, secondary, destructive, disabled, loading',
+      'Text input: default, focus, error, disabled, locked',
+      'Password input with eye toggle',
+      'Dropdown and text area',
+      'Checkbox and chip/segmented control',
+      'Dialog: normal and destructive',
+      'Component tests written'
+    ], done: 'All states match Figma and tests pass.' },
+    { id: 'd4', title: 'Day 4: Status components', goal: 'Badges, banners, indicators.', items: [
+      'Status badges: Draft, Pending, Syncing, Failed, Held, Quarantined, Synced',
+      'Banners: offline, warning, error, info, success',
+      'Online/Offline pill',
+      'Stepper (Step 1 of 4) and scope card',
+      'Photo placeholder and empty state',
+      'Lucide icons installed (compatibility checked)'
+    ], done: 'Every status uses text plus icon, never colour alone.' },
+    { id: 'd5', title: 'Day 5: Data model and API contract', goal: 'Types, schema, contract for the team.', items: [
+      'Domain types: Observation, Photo, Draft, SyncState, Scope, Task, Correction',
+      'Local database schema draft',
+      'Server API contract: login, scope, catalogue, observation upload, photo upload, corrections',
+      'Contract sent to the team',
+      'Status names match Baseline v3.8'
+    ], done: 'The team has read the contract.' },
+    { id: 'd6', title: 'Day 6: Local database', goal: 'Encrypted SQLite and repositories.', items: [
+      'Encrypted SQLite library chosen (RN 0.88 and New Architecture compatible)',
+      'Encryption key kept in Android Keystore',
+      'Migration system',
+      'Repository layer (screens never touch the DB directly)',
+      'Unit tests'
+    ], done: 'Save a record, kill the app, reopen: the record is still there.' },
+    { id: 'd7', title: 'Day 7: Observation wizard and drafts', goal: 'Four steps with auto-saved drafts.', items: [
+      'Wizard: Photo, Location, Details, Review',
+      'Details fields: disease, severity, leaf area %, leaf surface, spread pattern, lesion colour',
+      'Validation (Zod) and error banner',
+      'Draft auto-saved at each step',
+      'Drafts list and resume',
+      'Git tag week1-milestone'
+    ], done: 'A draft resumes after an app restart.' },
+    { id: 'd8', title: 'Day 8: Login and session', goal: 'Sign-in flow and secure session.', items: [
+      'Login screen: Worker ID, password, language',
+      'States: default, validation error, loading, failed',
+      'Remember me stores Worker ID only',
+      'Token stored in Android Keystore',
+      'Session locked, Access revoked and offline unlock screens',
+      'Splash screen'
+    ], done: 'Real backend login works. If no backend yet, mark as NOT done.' },
+    { id: 'd9', title: 'Day 9: GPS', goal: 'Permission and location states.', items: [
+      'Location permission flow',
+      'States: allowed, denied, no fix, low accuracy, retry',
+      'Accuracy shown exactly as the device reports it',
+      'Manual pin stays disabled (policy pending)',
+      'Tested on emulator and a real phone'
+    ], done: 'All five states tested.' },
+    { id: 'd10', title: 'Day 10: Camera and photos', goal: 'Capture, check, store.', items: [
+      'Camera permission and denied screen',
+      'Capture, preview, retake',
+      'Multiple photos per observation',
+      'Photo quality check (file checks and user questions)',
+      'Compression and local storage'
+    ], done: 'Photos are still there after an app restart.' },
+    { id: 'd11', title: 'Day 11: Sync engine', goal: 'Reliable upload with no duplicates.', items: [
+      'UUID on every record',
+      'Outbox states: draft, pending, syncing, synced, failed',
+      'Retry with backoff',
+      'Duplicate prevention',
+      'Photos upload separately',
+      'Nothing shown as uploaded until the server confirms a receipt',
+      'Sync screen and status UI'
+    ], done: 'Offline save, restart, reconnect gives exactly one server record.' },
+    { id: 'd12', title: 'Day 12: Home, History, Corrections', goal: 'Browse and review on the phone.', items: [
+      'Home: scope, Drafts/Pending/Failed counts, recent items',
+      'Scope select and scope change notice',
+      'History: list, search, filter, pagination',
+      'Observation details',
+      'Corrections tab',
+      'My Tasks (only if the backend is ready)',
+      'Language sheet'
+    ], done: 'Smooth with 300+ records.' },
+    { id: 'd13', title: 'Day 13: Testing', goal: 'Break it before users do.', items: [
+      'Offline test: internet off, save, restart, reconnect',
+      'Interrupted sync',
+      'Slow network',
+      'Real Android device',
+      'Different screen sizes',
+      'Sinhala and Tamil UI check',
+      'Bug list written and fixes made'
+    ], done: 'Test results are written down.' },
+    { id: 'd14', title: 'Day 14: Release and buffer', goal: 'Installable build.', items: [
+      'Release build and signed APK',
+      'No secrets in the repository',
+      'Install notes written',
+      'Remaining bugs or buffer time'
+    ], done: 'The APK installs on a real phone.' }
+  ];
+
+  // ---- State ----------------------------------------------------------
+  var KEY = 'tealeaf-checklist-v1';
+  var state = { checked: {}, notes: {}, general: '', start: '', time: '09:00', remind: false, lastFired: '' };
+
+  function load() {
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (raw) { var p = JSON.parse(raw); for (var k in p) { state[k] = p[k]; } }
+    } catch (e) { /* storage unavailable: run in memory */ }
+  }
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
+  }
+
+  var $ = function (id) { return document.getElementById(id); };
+  var itemKey = function (d, i) { return d.id + ':' + i; };
+
+  // ---- Rendering ------------------------------------------------------
+  function render() {
+    var host = $('days');
+    var openIds = {};
+    Array.prototype.forEach.call(host.querySelectorAll('details'), function (el) { openIds[el.dataset.id] = el.open; });
+    host.innerHTML = '';
+
+    var today = todayDayId();
+
+    DAYS.forEach(function (d) {
+      var det = document.createElement('details');
+      det.className = 'day';
+      det.dataset.id = d.id;
+      det.open = (d.id in openIds) ? openIds[d.id] : (d.id === today);
+
+      var done = 0;
+      d.items.forEach(function (_, i) { if (state.checked[itemKey(d, i)]) done++; });
+
+      var sum = document.createElement('summary');
+      sum.innerHTML = '<span><span class="day-title"></span><br><span class="day-goal"></span></span><span class="count"></span>';
+      sum.querySelector('.day-title').textContent = d.title;
+      sum.querySelector('.day-goal').textContent = d.goal;
+      var c = sum.querySelector('.count');
+      c.textContent = done + '/' + d.items.length;
+      if (done === d.items.length) c.classList.add('done');
+      det.appendChild(sum);
+
+      var body = document.createElement('div');
+      body.className = 'day-body';
+
+      d.items.forEach(function (text, i) {
+        var k = itemKey(d, i);
+        var row = document.createElement('div');
+        row.className = 'item';
+        var cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.id = 'cb-' + k.replace(':', '-');
+        cb.checked = !!state.checked[k];
+        cb.addEventListener('change', function () {
+          if (cb.checked) state.checked[k] = true; else delete state.checked[k];
+          save(); render();
+        });
+        var lb = document.createElement('label');
+        lb.htmlFor = cb.id;
+        lb.textContent = text;
+        row.appendChild(cb); row.appendChild(lb);
+        body.appendChild(row);
+      });
+
+      var dw = document.createElement('div');
+      dw.className = 'done-when';
+      var b = document.createElement('b'); b.textContent = 'Done when: ';
+      dw.appendChild(b); dw.appendChild(document.createTextNode(d.done));
+      body.appendChild(dw);
+
+      var nl = document.createElement('label');
+      nl.className = 'note-label'; nl.htmlFor = 'note-' + d.id; nl.textContent = 'Note for this day';
+      var ta = document.createElement('textarea');
+      ta.id = 'note-' + d.id;
+      ta.value = state.notes[d.id] || '';
+      ta.addEventListener('input', function () { state.notes[d.id] = ta.value; save(); });
+      body.appendChild(nl); body.appendChild(ta);
+
+      det.appendChild(body);
+      host.appendChild(det);
+    });
+
+    updateProgress();
+  }
+
+  function updateProgress() {
+    var total = 0, done = 0, next = null;
+    DAYS.forEach(function (d) {
+      d.items.forEach(function (t, i) {
+        total++;
+        if (state.checked[itemKey(d, i)]) done++;
+        else if (!next) next = { day: d.title, text: t };
+      });
+    });
+    var pct = total ? Math.round(done * 100 / total) : 0;
+    $('pct').textContent = pct + '%';
+    $('counts').textContent = done + ' of ' + total + ' items';
+    $('bar').setAttribute('aria-valuenow', pct);
+    $('bar').firstElementChild.style.width = pct + '%';
+    var n = $('next');
+    n.textContent = '';
+    if (next) {
+      var b = document.createElement('b'); b.textContent = 'Next up: ';
+      n.appendChild(b);
+      n.appendChild(document.createTextNode(next.day + ' \u2013 ' + next.text));
+    } else {
+      n.textContent = 'Everything is ticked. Review the release build once more.';
+    }
+  }
+
+  // ---- Dates and reminders --------------------------------------------
+  function todayDayId() {
+    if (!state.start) return 'd0';
+    var s = new Date(state.start + 'T00:00:00');
+    var t = new Date(); t.setHours(0, 0, 0, 0);
+    var n = Math.floor((t - s) / 86400000) + 1;
+    if (n < 1) return 'd0';
+    if (n > 14) return 'd14';
+    return 'd' + n;
+  }
+
+  function nextItemText() {
+    for (var a = 0; a < DAYS.length; a++) {
+      for (var i = 0; i < DAYS[a].items.length; i++) {
+        if (!state.checked[itemKey(DAYS[a], i)]) return DAYS[a].title + ': ' + DAYS[a].items[i];
+      }
+    }
+    return 'All items are ticked.';
+  }
+
+  function say(msg) { $('status').textContent = msg; }
+
+  function fireReminder() {
+    var body = nextItemText();
+    say('Reminder: ' + body);
+    if ('Notification' in window && Notification.permission === 'granted') {
+      try { new Notification('TeaLeaf Field Scout', { body: body }); } catch (e) { /* ignore */ }
+    }
+  }
+
+  function tick() {
+    if (!state.remind) return;
+    var now = new Date();
+    var hhmm = ('0' + now.getHours()).slice(-2) + ':' + ('0' + now.getMinutes()).slice(-2);
+    var stamp = now.toDateString() + ' ' + state.time;
+    if (hhmm === state.time && state.lastFired !== stamp) {
+      state.lastFired = stamp; save(); fireReminder();
+    }
+  }
+
+  function enableReminder() {
+    state.time = $('remTime').value || '09:00';
+    state.start = $('startDate').value || state.start;
+    state.remind = true; save(); render();
+    if (!('Notification' in window)) {
+      say('Reminder is on at ' + state.time + ', shown here on the page (this browser has no notifications).');
+      return;
+    }
+    Notification.requestPermission().then(function (p) {
+      if (p === 'granted') say('Reminder is on at ' + state.time + '. Keep this tab open.');
+      else say('Reminder is on at ' + state.time + ', shown on this page only. Notifications are blocked in your browser.');
+    });
+  }
+
+  function pad(n) { return ('0' + n).slice(-2); }
+
+  function downloadIcs() {
+    var startVal = $('startDate').value || state.start;
+    if (!startVal) { say('Pick a start date first.'); return; }
+    var time = $('remTime').value || '09:00';
+    var d = startVal.split('-'), t = time.split(':');
+    var dt = d[0] + d[1] + d[2] + 'T' + pad(t[0]) + pad(t[1]) + '00';
+    var lines = [
+      'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//TeaLeaf Field Scout//Checklist//EN',
+      'BEGIN:VEVENT',
+      'UID:tealeaf-checklist-' + dt + '@local',
+      'DTSTAMP:' + new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z',
+      'DTSTART:' + dt,
+      'DURATION:PT30M',
+      'RRULE:FREQ=DAILY;COUNT=15',
+      'SUMMARY:TeaLeaf Field Scout: open today\'s checklist',
+      'DESCRIPTION:' + location.href.split('#')[0],
+      'BEGIN:VALARM', 'ACTION:DISPLAY', 'DESCRIPTION:TeaLeaf checklist', 'TRIGGER:PT0M', 'END:VALARM',
+      'END:VEVENT', 'END:VCALENDAR'
+    ];
+    var blob = new Blob([lines.join('\r\n')], { type: 'text/calendar' });
+    download(blob, 'tealeaf-checklist-reminder.ics');
+    say('Calendar file downloaded. Open it to add a daily event for 15 days.');
+  }
+
+  function download(blob, name) {
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+  }
+
+  // ---- Backup ---------------------------------------------------------
+  function exportData() {
+    download(new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' }), 'tealeaf-checklist-backup.json');
+  }
+  function importData(file) {
+    var r = new FileReader();
+    r.onload = function () {
+      try {
+        var p = JSON.parse(r.result);
+        if (typeof p !== 'object' || !p || typeof p.checked !== 'object') throw new Error('bad');
+        state = Object.assign({ checked: {}, notes: {}, general: '', start: '', time: '09:00', remind: false, lastFired: '' }, p);
+        save(); init(); say('Backup imported.');
+      } catch (e) { say('That file is not a valid backup.'); }
+    };
+    r.readAsText(file);
+  }
+
+  // ---- Init -----------------------------------------------------------
+  function init() {
+    $('startDate').value = state.start || '';
+    $('remTime').value = state.time || '09:00';
+    $('generalNote').value = state.general || '';
+    $('enableBtn').textContent = state.remind ? 'Update reminder' : 'Turn on reminder';
+    render();
+  }
+
+  load();
+  init();
+
+  $('startDate').addEventListener('change', function () { state.start = this.value; save(); render(); });
+  $('remTime').addEventListener('change', function () { state.time = this.value; save(); });
+  $('generalNote').addEventListener('input', function () { state.general = this.value; save(); });
+  $('enableBtn').addEventListener('click', enableReminder);
+  $('icsBtn').addEventListener('click', downloadIcs);
+  $('exportBtn').addEventListener('click', exportData);
+  $('importBtn').addEventListener('click', function () { $('importFile').click(); });
+  $('importFile').addEventListener('change', function () { if (this.files[0]) importData(this.files[0]); this.value = ''; });
+  $('resetBtn').addEventListener('click', function () {
+    if (confirm('Clear all ticks, notes and reminder settings? This cannot be undone.')) {
+      state = { checked: {}, notes: {}, general: '', start: '', time: '09:00', remind: false, lastFired: '' };
+      save(); init(); say('Everything was reset.');
+    }
+  });
+
+  setInterval(tick, 20000);
+  tick();
+})();
+</script>
+</body>
+</html>
